@@ -29,7 +29,7 @@ api_client = httpx.AsyncClient(
 # --- MCP server (stdio) ---
 mcp = FastMCP(name="BambooCraftCenter")
 
-@mcp.tool
+@mcp.tool()
 async def get_bamboo_craft_center_info(
     messages: list,
     stream: bool = False,
@@ -44,7 +44,6 @@ async def get_bamboo_craft_center_info(
     ctx: Context = None,
     system_args: dict = None
 ) -> dict:
-    """Proxy a chat completion to your DO Agent endpoint."""
     logger.debug(f"Received messages: {messages}, context: {ctx}, system_args: {system_args}")
 
     if not isinstance(messages, list) or not all(isinstance(msg, dict) and 'role' in msg and 'content' in msg for msg in messages):
@@ -101,7 +100,6 @@ async def connect_with_retry(uri):
                 await asyncio.sleep(backoff)
 
             logger.info("Connecting to WebSocket server...")
-            # Keepalive so PaaS/load balancers don’t drop the idle WS
             async with websockets.connect(
                 uri,
                 ping_interval=20,
@@ -196,7 +194,6 @@ if __name__ == "__main__":
 
     if "--server" in sys.argv:
         logger.info("Running as MCP server with stdio transport")
-        # Ensure unbuffered stdio for the child process as well
         os.environ["PYTHONUNBUFFERED"] = "1"
         mcp.run(transport="stdio")
     else:
